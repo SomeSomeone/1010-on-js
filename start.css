@@ -1,0 +1,19 @@
+.block{
+	border-radius :20px;
+	border: solid white;
+    background:black; 
+	position: absolute;
+
+}
+.block_move{
+	position: absolute;
+	border-radius :20px;
+	opacity: 0.7;
+	background-color:lime; 
+}
+.block:nth-child(2n){
+	background:gray; 
+}
+.figurs{
+	margin-left: 700px;
+}
