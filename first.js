@@ -113,6 +113,7 @@ function Figur (class_name){
 	this.number;
 	this.kind=-1;
 	this.blocks=[];
+
 };
 
 
@@ -133,7 +134,7 @@ Figur.prototype.blocks_combimation	= 	[	[ [0,0] , [0,1] , [0,2] , [0,3] ] ,// |
 											[ [0,1] , [0,2] , [0,3] , [1,3] ],
 											[ [0,1] , [1,1] , [2,1] , [2,2] ],//L
 										];
-Figur.prototype.figurs	=[]; 
+Figur.prototype.figurs=[]; 
 
 Figur.prototype.draw = function(number){
 	this.figurs[number]=this;
@@ -149,10 +150,12 @@ Figur.prototype.draw = function(number){
 		var style='style="left:'+(board_size+block_size*this.blocks[i][0])+'px;top:'+block_size*this.blocks[i][1]+'px;"';
 		$("."+this.class_name).append('<div class="block_move" id="'+this.blocks[i][0]+'_'+this.blocks[i][1]+'_'+number+'" '+style+'>'+this.blocks[i][0]+'_'+this.blocks[i][1]+'</div>');
 	};
-	$(".block_move").multiDraggable({ group: $(".block_move"), dragNative : function () {}});
+
+	$("."+this.class_name+" > .block_move").multiDraggable({ group: $("."+this.class_name+" > .block_move"), dragNative : function () {}});
+	
 	$(".block_move").css({width:block_size,height:block_size});
 	$(".block_move").css("border",border_size+" px solid white");
-	$(".block_move").css("background-color",background_color)
+	$("."+this.class_name+" > .block_move").css("background-color",background_color)
 };
 
 Figur.prototype.erase = function(){
@@ -161,8 +164,12 @@ Figur.prototype.erase = function(){
 
 };
 
-figur=new Figur ("first")
+figur=new Figur ("first");
 figur.draw(0);
+figur=new Figur ("second");
+figur.draw(1);
+figur=new Figur ("third");
+figur.draw(2);
 
-
-console.log(Figur.prototype.blocks_combimation[0])
+console.log(figur.class_name);
+console.log(figur2.class_name);
