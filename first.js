@@ -1,53 +1,21 @@
 var size=8;
 var border_size=5;
 var block_size=($( document ).height()-200)/size;
-var bourd_size=(block_size+border_size)*size
+var bourd_size=(block_size+border_size*2)*size;
 
 for (var x = size-1 ; x >= 0; x--) {
 	for (var y = size-1 ; y >= 0; y--) {
-
-		var style='style="left:'+((block_size+border_size)*x)+'px;top:'+((block_size+border_size)*y)+'px;"';
+		var style='style="left:'+((block_size+border_size*2)*x)+'px;top:'+((block_size+border_size*2)*y)+'px;"';
 		$(".board").append('<div class="block" id="'+x+'_'+y+'" ' + style+'>'+x+'_'+y+'</div>');
 	};
 	$(".board").append('<br>');
 };
 
-$(".board").css({width:bourd_size});
+$(".board").css({width:bourd_size,height:bourd_size});
+$(".board").css("background-color","gray");
 
 $(".block").css({width:block_size,height:block_size});
-$(".block").css("border",border_size+" px solid white");
-
-
-/*
-
-	$(".block").click(function(){
-		var id=this.id;
-		var id_i=parseInt(id.split('_')[0]);
-		var id_u=parseInt(id.split('_')[1]);
-		for (var i = id_i+1; i >= 0 && i>=id_i-1; i--) {
-			for (var u = id_u+1; u >= 0 && u>=id_u-1 ; u--) {
-				if(!( (i==id_i+1||i==id_i-1) && (u==id_u+1||u==id_u-1) ))  {
-					change_color("#"+i+"_"+u);	
-				};
-				
-			};
-		};
-		
-
-	});
-
-
-	function change_color(id){
-		console.log(id);
-		var color=$(id).css("background-color");
-		console.log(color);
-		 if (color == 'rgb(0, 0, 255)') {
-		 	$(id).css( "backgroundColor" , "gray");
-		 }else {
-			$(id).css( "backgroundColor", "blue");
-		 };
-	};
-*/
+$(".block").css("border", "gray solid "+border_size+"px"); 
 
 
 $(function() {
@@ -61,11 +29,26 @@ $(function() {
 
 				y=parseInt(this.id.split('_')[1])-parseInt(event.target.id.split('_')[1]);
             	x=parseInt(this.id.split('_')[0])-parseInt(event.target.id.split('_')[0]);
-	            for (var i in figur.blocks ) {
-		            $("#"+(x+figur.blocks[i][0])+"_"+(y+figur.blocks[i][1])).css( "backgroundColor" , color);        
-	            };
-	            figur.erase();
-	            figur.draw(figur.number);
+				//bad solutionx+figur.blocks[i][0];
+				var error=false;
+				for (var i = figur.blocks.length - 1; i >= 0 && !error ; i--) {
+					var update_x=x+figur.blocks[i][0];
+					var update_y=y+figur.blocks[i][1];
+					var update_color=$("#"+update_x+"_"+update_y).css("background-color");
+					if( update_x<0||update_x>=size||
+						update_x<0||update_x>=size||
+						update_color != 'rgb(255, 255, 255)'){
+						error=true;
+					};
+				};
+
+				if(!error){
+		            for (var i in figur.blocks ) {
+			            $("#"+(x+figur.blocks[i][0])+"_"+(y+figur.blocks[i][1])).css( "backgroundColor" , color);        
+		            };
+		            figur.erase();
+		            figur.draw(figur.number);
+		        }
         }
     });
 		
