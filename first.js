@@ -117,33 +117,6 @@ Board.prototype.status = function(){
 
 }
 
-$(function() {
-	$('.block').droppable({
-        drop: function(event, ui) {
-        	var figur=Figur.prototype.figurs[event.target.id.split('_')[2]]
-
-			y=parseInt(this.id.split('_')[1])-parseInt(event.target.id.split('_')[1]);
-        	x=parseInt(this.id.split('_')[0])-parseInt(event.target.id.split('_')[0]);
-
-			if(board.can_input_figur(figur,x,y)){
-	            board.input_figur(figur,x,y);
-	            console.log("input done")
-	            console.log(board.control_sum)
-	            board.status();
-	            if(board.is_need_clean()){
-	            	board.clean();
-	            	board.status();
-	            }
-	            figur.erase();
-	            if(Figur.prototype.is_need_generate()){
-	            	Figur.prototype.generate(board);
-	            }
-	            //figur.draw(figur.number);
-	        }
-        }
-    });
-		
-});
 
 function getRandomColor() {
     var letters = '0123456789ABCDEF'.split('');
@@ -247,6 +220,35 @@ Figur.prototype.erase = function(){
 var board = new Board ();
 board.draw();
 Figur.prototype.generate(board);
+
+$(function() {
+	$('.block').droppable({
+        drop: function(event, ui) {
+        	var figur=Figur.prototype.figurs[event.target.id.split('_')[2]]
+
+			y=parseInt(this.id.split('_')[1])-parseInt(event.target.id.split('_')[1]);
+        	x=parseInt(this.id.split('_')[0])-parseInt(event.target.id.split('_')[0]);
+
+			if(board.can_input_figur(figur,x,y)){
+	            board.input_figur(figur,x,y);
+	            console.log("input done")
+	            console.log(board.control_sum)
+	            board.status();
+	            if(board.is_need_clean()){
+	            	board.clean();
+	            	board.status();
+	            }
+	            figur.erase();
+	            if(Figur.prototype.is_need_generate()){
+	            	Figur.prototype.generate(board);
+	            }
+	            //figur.draw(figur.number);
+	        }
+        }
+    });
+		
+});
+		
 
 $(".restart").click(function(){
 	board.restart_board();
