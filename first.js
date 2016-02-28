@@ -10,11 +10,26 @@ function Board (){
 	this.control_sum=[[],[]];
 	this.must_clean=[[],[]];
 }
+
+Board.prototype.restart_board = function(){
+	this.control_sum=[[],[]];
+	this.must_clean=[[],[]];
+	for (var x = this.blocks_count-1 ; x >= 0; x--) {
+		for (var y =this.blocks_count-1 ; y >= 0; y--) {
+			$("."+this.class_name+'>#'+x+'_'+y).animate({ backgroundColor: "#ffffff" }, 2000)
+		};
+	this.control_sum[0][x]=0;//x
+	this.control_sum[1][x]=0;//y
+	};
+}
+
+
+
 Board.prototype.draw = function(){
 	for (var x = this.blocks_count-1 ; x >= 0; x--) {
 		for (var y =this.blocks_count-1 ; y >= 0; y--) {
 			var style='style="left:'+(this.full_block_size*x)+'px;top:'+(this.full_block_size*y)+'px;"';
-			$("."+this.class_name).append('<div class="'+this.class_block+'" id="'+x+'_'+y+'" ' + style+'>'+x+'_'+y+'</div>');
+			$("."+this.class_name).append('<div class="'+this.class_block+'" id="'+x+'_'+y+'" ' + style+'></div>');
 		};
 		this.control_sum[0][x]=0;//x
 		this.control_sum[1][x]=0;//y
@@ -49,11 +64,10 @@ Board.prototype.input_figur = function(figur, start_x, start_y){
 
 Board.prototype.is_need_clean = function(){
 	var result=false;
-	for (var u in this.must_clean) {
+	for (var x_or_y in this.must_clean) {
 		for (var i = this.blocks_count-1; i >= 0; i--) {
-			if(this.control_sum [u][i]>=this.blocks_count){
-				this.must_clean[u][i]=true;
-				console.log(u+"--"+i)
+			if(this.control_sum [x_or_y][i]>=this.blocks_count){
+				this.must_clean[x_or_y][i]=true;
 				result=true;
 			};
 		};
@@ -61,25 +75,47 @@ Board.prototype.is_need_clean = function(){
 	return result;
 }
 
+
 Board.prototype.clean = function(){
-	for(var u in this.must_clean){
-		for(var i in this.must_clean[u]){
-			if(this.must_clean[u][i]){
-	            for (var z = this.blocks_count-1; z >= 0 && this.must_clean[u][i]; z--) {
-					if(u){
-						$("#"+z+"_"+i).css( "backgroundColor" , 'white');
-					}else{
-						$("#"+i+"_"+z).css( "backgroundColor" , 'white');
+	for(var x_or_y in this.must_clean){
+		for(var number_in_must_clean in this.must_clean[x_or_y]){
+			if(this.must_clean[x_or_y][number_in_must_clean]){
+
+	            for (var i = this.blocks_count-1; i >= 0; i--) {
+					if(x_or_y==0){
+
+						 $("#"+number_in_must_clean+"_"+i).animate({ backgroundColor: "#000000" }, 400)
+						 $("#"+number_in_must_clean+"_"+i).animate({ backgroundColor: "#ffffff" }, 400)
+					//	$("#"+number_in_must_clean+"_"+i).css( "backgroundColor" , 'white');
+					};
+					if(x_or_y==1){
+						$("#"+i+"_"+number_in_must_clean).animate({ backgroundColor: "#000000" }, 400);
+						$("#"+i+"_"+number_in_must_clean).animate({ backgroundColor: "#ffffff" }, 400);
+					//;	$("#"+i+"_"+number_in_must_clean).css( "backgroundColor" , 'white');
 					}
-					this.control_sum[1-u][z]--;
+
+
+					if(this.control_sum[1-x_or_y][i]>0){
+						this.control_sum[1-x_or_y][i]--;
+					}
 		        }
-		        this.must_clean[u][i]=false;
-		        this.control_sum[u][i]=0;
+
+		        this.must_clean[x_or_y][number_in_must_clean]=false;
+		        this.control_sum[x_or_y][number_in_must_clean]=0;
 			}
 		}
 	}
+	console.log(this.control_sum);
 }
 
+
+Board.prototype.status = function(){
+	console.log('must_clean.x='+this.must_clean[0].join(" "));
+	console.log('must_clean.y='+this.must_clean[1].join(" "));
+	console.log('control_sum.x='+this.control_sum[0].join(" "));
+	console.log('control_sum.x='+this.control_sum[1].join(" "));
+
+}
 
 $(function() {
 	$('.block').droppable({
@@ -93,11 +129,10 @@ $(function() {
 	            board.input_figur(figur,x,y);
 	            console.log("input done")
 	            console.log(board.control_sum)
-	            
+	            board.status();
 	            if(board.is_need_clean()){
-	            	console.log(board.must_clean)
 	            	board.clean();
-	            	console.log("clean done")
+	            	board.status();
 	            }
 	            figur.erase();
 	            if(Figur.prototype.is_need_generate()){
@@ -129,6 +164,8 @@ function Figur (board,name){
 };
 Figur.prototype.figurs_count=3;
 
+Figur.prototype.figurs=[]; 
+
 Figur.prototype.blocks_combimation	= 	[	[ [0,0] , [0,1] , [0,2] , [0,3] ] ,// |
 			 
 											[ [0,0] , [1,0] , [2,0] , [3,0] ] ,// -
@@ -139,15 +176,13 @@ Figur.prototype.blocks_combimation	= 	[	[ [0,0] , [0,1] , [0,2] , [0,3] ] ,// |
 
 											[ [0,0] , [0,1] , [1,0] , [1,1] ] ,//square 2*2
 
-											[ [0,1] , [1,0] , [1,1] , [1,2] , [2,1] ],//+
+											//[ [0,1] , [1,0] , [1,1] , [1,2] , [2,1] ],//+
 
-											[ [0,0] , [0,1] , [0,2] , [1,2] ],
-											[ [0,0] , [0,1] , [0,2] , [1,0] ],
-											[ [0,1] , [0,2] , [0,3] , [1,3] ],
-											[ [0,1] , [1,1] , [2,1] , [2,2] ],//L
+											//[ [0,0] , [0,1] , [0,2] , [1,2] ],
+											//[ [0,0] , [0,1] , [0,2] , [1,0] ],
+											//[ [0,1] , [0,2] , [0,3] , [1,3] ],
+											//[ [0,1] , [1,1] , [2,1] , [2,2] ],//L
 										]
-
-Figur.prototype.figurs=[]; 
 
 Figur.prototype.draw = function(number){
 	this.figurs[number]=this;
@@ -162,7 +197,7 @@ Figur.prototype.draw = function(number){
 
 	for (var i in this.blocks) {
 		var style='style="left:'+(this.board.full_size+this.block_size*this.blocks[i][0])+'px;top:'+this.block_size*this.blocks[i][1]+'px;"';
-		$("."+this.class_name).append('<div class="block_move" id="'+this.blocks[i][0]+'_'+this.blocks[i][1]+'_'+number+'" '+style+'>'+this.blocks[i][0]+'_'+this.blocks[i][1]+'</div>');
+		$("."+this.class_name).append('<div class="block_move" id="'+this.blocks[i][0]+'_'+this.blocks[i][1]+'_'+number+'" '+style+'></div>');
 	};
 
 	$("."+this.class_name+" > .block_move").multiDraggable({ group: $("."+this.class_name+" > .block_move"), dragNative : function () {}});
@@ -190,15 +225,26 @@ Figur.prototype.generate = function(board){
 }
 
 
-
 Figur.prototype.erase = function(){
     $('.'+this.class_name).remove();
 	var number=this.number;
+	console.log('erase')
 	delete Figur.prototype.figurs[number];
 };
 
-
-var board= new Board ();
+var board = new Board ();
 board.draw();
 Figur.prototype.generate(board);
+
+$(".restart").click(function(){
+	board.restart_board();
+	for(var i in Figur.prototype.figurs){
+		var a= Figur.prototype.figurs[i].erase();
+	}
+
+    if(Figur.prototype.is_need_generate()){
+    	Figur.prototype.generate(board);
+    }
+})
+
 
