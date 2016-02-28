@@ -1,6 +1,7 @@
 function Board (){
 	this.class_name="board";
-	this.class_block="block"
+	this.class_block="block";
+	this.figur_count=3;
 	this.blocks_count=8;
 	this.block_size=($( document ).height()-200)/this.blocks_count;
 	this.block_border=5;//need rewrite
@@ -10,7 +11,6 @@ function Board (){
 	this.must_clean=[[],[]];
 }
 Board.prototype.draw = function(){
-
 	for (var x = this.blocks_count-1 ; x >= 0; x--) {
 		for (var y =this.blocks_count-1 ; y >= 0; y--) {
 			var style='style="left:'+(this.full_block_size*x)+'px;top:'+(this.full_block_size*y)+'px;"';
@@ -21,7 +21,6 @@ Board.prototype.draw = function(){
 	};
 	$("."+this.class_block).css({width:this.block_size,height:this.block_size});
 	$("."+this.class_block).css("border", "gray solid "+this.block_border+"px");
-
 };
 
 Board.prototype.can_input_figur = function(figur, start_x, start_y){
@@ -63,23 +62,15 @@ Board.prototype.is_need_clean = function(){
 }
 
 Board.prototype.clean = function(){
-					console.log("inside");
 	for(var u in this.must_clean){
-							console.log("inside1");
 		for(var i in this.must_clean[u]){
-								console.log("inside2");
 			if(this.must_clean[u][i]){
-				console.log("inside3")
 	            for (var z = this.blocks_count-1; z >= 0 && this.must_clean[u][i]; z--) {
-
 					if(u){
-						var id="#"+z+"_"+i;
-						
+						$("#"+z+"_"+i).css( "backgroundColor" , 'white');
 					}else{
-						var id="#"+i+"_"+z;
+						$("#"+i+"_"+z).css( "backgroundColor" , 'white');
 					}
-					console.log(id);
-					$(id).css( "backgroundColor" , 'white');
 					this.control_sum[1-u][z]--;
 		        }
 		        this.must_clean[u][i]=false;
@@ -88,12 +79,6 @@ Board.prototype.clean = function(){
 		}
 	}
 }
-
-
-var board= new Board ();
-board.draw();
-
-
 
 
 $(function() {
@@ -115,7 +100,10 @@ $(function() {
 	            	console.log("clean done")
 	            }
 	            figur.erase();
-	            figur.draw(figur.number);
+	            if(Figur.prototype.is_need_generate()){
+	            	Figur.prototype.generate(board);
+	            }
+	            //figur.draw(figur.number);
 	        }
         }
     });
@@ -138,9 +126,8 @@ function Figur (board,name){
 	this.number;
 	this.kind=-1;
 	this.blocks=[];
-
 };
-
+Figur.prototype.figurs_count=3;
 
 Figur.prototype.blocks_combimation	= 	[	[ [0,0] , [0,1] , [0,2] , [0,3] ] ,// |
 			 
@@ -158,20 +145,22 @@ Figur.prototype.blocks_combimation	= 	[	[ [0,0] , [0,1] , [0,2] , [0,3] ] ,// |
 											[ [0,0] , [0,1] , [0,2] , [1,0] ],
 											[ [0,1] , [0,2] , [0,3] , [1,3] ],
 											[ [0,1] , [1,1] , [2,1] , [2,2] ],//L
-										];
+										]
+
 Figur.prototype.figurs=[]; 
 
 Figur.prototype.draw = function(number){
 	this.figurs[number]=this;
 	this.number=number;
+
 	this.background_color=getRandomColor();
+	
 	this.kind = Math.floor((Math.random() * this.blocks_combimation.length) );
 	this.blocks=this.blocks_combimation[this.kind];
 
 	$(".figurs").append('<div class='+this.class_name+'></div>');
 
 	for (var i in this.blocks) {
-
 		var style='style="left:'+(this.board.full_size+this.block_size*this.blocks[i][0])+'px;top:'+this.block_size*this.blocks[i][1]+'px;"';
 		$("."+this.class_name).append('<div class="block_move" id="'+this.blocks[i][0]+'_'+this.blocks[i][1]+'_'+number+'" '+style+'>'+this.blocks[i][0]+'_'+this.blocks[i][1]+'</div>');
 	};
@@ -182,15 +171,34 @@ Figur.prototype.draw = function(number){
 	$("."+this.class_name+" > .block_move").css("background-color",this.background_color)
 };
 
-Figur.prototype.erase = function(){
-	this.blocks=[];
-    $('.'+this.class_name).remove();
+Figur.prototype.is_need_generate = function(){
+	for(var i in Figur.prototype.figurs){
+		if(Figur.prototype.figurs[i]){
+			return false
+		}
+	}
+	return true;
+}
 
+
+Figur.prototype.generate = function(board){
+	for (var i = Figur.prototype.figurs_count - 1; i >= 0; i--) {
+		console.log("generate");
+		figur=new Figur (board, "figur"+i)
+		figur.draw(i);
+	};
+}
+
+
+
+Figur.prototype.erase = function(){
+    $('.'+this.class_name).remove();
+	var number=this.number;
+	delete Figur.prototype.figurs[number];
 };
 
-figur=new Figur (board,'ghjk');
-figur.draw(0);
-figur=new Figur (board,'tyhjk');
-figur.draw(1);
-figur=new Figur (board,'yhjk');
-figur.draw(2);
+
+var board= new Board ();
+board.draw();
+Figur.prototype.generate(board);
+
