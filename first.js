@@ -3,10 +3,13 @@ function Board (){
 	this.class_block="block";
 	this.figur_count=3;
 	this.blocks_count=10;
-	this.block_size=($( document ).height()-200)/this.blocks_count;
-	this.block_border=5;//need rewrite
+	this.block_size=parseInt(($( document ).height()-200)/this.blocks_count);
+	this.block_border=parseInt(this.block_size/20);//need rewrite
+	
 	this.full_block_size=this.block_size+this.block_border*2;
 	this.full_size=this.full_block_size*this.blocks_count;
+	
+	this.points=0;
 	this.control_sum=[[],[]];
 	this.must_clean=[[],[]];
 }
@@ -14,6 +17,7 @@ function Board (){
 Board.prototype.restart_board = function(){
 	this.control_sum=[[],[]];
 	this.must_clean=[[],[]];
+	this.points=0;
 	for (var x = this.blocks_count-1 ; x >= 0; x--) {
 		for (var y =this.blocks_count-1 ; y >= 0; y--) {
 			$("."+this.class_name+'>#'+x+'_'+y).animate({ backgroundColor: "#ffffff" }, 2000)
@@ -86,6 +90,7 @@ Board.prototype.input_figur = function(figur, start_x, start_y){
 		$("#"+update_x+"_"+update_y).css( "backgroundColor" , figur.background_color);
 		this.control_sum [0][update_x]++;
 		this.control_sum [1][update_y]++;
+		this.points++;
 	};
 };
 
@@ -121,7 +126,7 @@ Board.prototype.clean = function(){
 					//;	$("#"+i+"_"+number_in_must_clean).css( "backgroundColor" , 'white');
 					}
 
-
+					this.points++;
 					if(this.control_sum[1-x_or_y][i]>0){
 						this.control_sum[1-x_or_y][i]--;
 					}
@@ -167,12 +172,14 @@ Figur.prototype.figurs_count=3;
 Figur.prototype.figurs=[]; 
 
 Figur.prototype.blocks_combimation	= 	[	[ [0,0] , [0,1] ] ,// | 2
+											[ [0,0] , [0,1] , [0,2] ] ,// | 3
 											[ [0,0] , [0,1] , [0,2] , [0,3] ] ,// | 4
 											[ [0,0] , [0,1] , [0,2] , [0,3] , [0,4] ] ,// | 5			 
 
 											[ [0,0] , [1,0] ] ,// - 2
+											[ [0,0] , [1,0] , [2,0] ] ,// - 3
 											[ [0,0] , [1,0] , [2,0] , [3,0] ] ,// - 4
-											[ [0,0] , [1,0] , [2,0] , [3,0] , [4,0]] ,// - 4
+											[ [0,0] , [1,0] , [2,0] , [3,0] , [4,0]] ,// - 5
 											
 											[ [0,0] ],//square 1*1
 
@@ -188,10 +195,10 @@ Figur.prototype.blocks_combimation	= 	[	[ [0,0] , [0,1] ] ,// | 2
 											[ [1,0] , [0,0] , [0,1] ],
 											[ [1,0] , [1,1] , [0,1] ],//L 2
 
-											[ [0,0] , [0,1] , [0,2] , [0,3] , [1,3] , [2,3] , [3,3]],
-											[ [0,0] , [1,0] , [2,0] , [3,0] , [3,1] , [3,2] , [3,3]],
-											[ [3,0] , [2,0] , [1,0] , [0,0] , [0,1] , [0,2] , [0,3]],
-											[ [3,0] , [3,1] , [3,2] , [3,3] , [2,3] , [1,3] , [0,3]],
+											[ [0,0] , [0,1] , [0,2] , [1,2] , [2,2] ],
+											[ [0,0] , [1,0] , [2,0] , [2,1] , [2,2] ],
+											[ [2,0] , [1,0] , [0,0] , [0,1] , [0,2] ],
+											[ [2,0] , [2,1] , [2,2] , [1,2] , [0,2] ],
 											
 											//L*4
 										]
@@ -268,7 +275,7 @@ $(function() {
 	            }
 	            //figur.draw(figur.number);
 	        };
-        	console.log("testing...");
+        	$("#points").text("POINTS : "+board.points);
 	        if(!board.can_input_any_figurs(Figur.prototype.figurs)){
 	        	$("#end_game").append("you can't input any figurs")
 	        }
@@ -279,6 +286,8 @@ $(function() {
 		
 
 $(".restart").click(function(){
+	$("#points").empty();
+	$("#end_game").empty();
 	board.restart_board();
 	for(var i in Figur.prototype.figurs){
 		var a= Figur.prototype.figurs[i].erase();
@@ -287,8 +296,6 @@ $(".restart").click(function(){
     if(Figur.prototype.is_need_generate()){
     	Figur.prototype.generate(board);
     }
-
-    $("#end_game").empty();
 })
 
 
