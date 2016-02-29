@@ -52,6 +52,33 @@ Board.prototype.can_input_figur = function(figur, start_x, start_y){
 	return true;
 };
 
+Board.prototype.can_input_any_figurs = function(figurs){
+
+	for(var figur in figurs){
+		for (var x = this.blocks_count; x >= 0; x--) {
+			for (var y = this.blocks_count; y >= 0; y--) {
+				var result=true;
+				for (var i = figurs[figur].blocks.length - 1; i >= 0 ; i--) {
+					var update_x=x+figurs[figur].blocks[i][0];
+					var update_y=y+figurs[figur].blocks[i][1];
+					var update_color=$("#"+update_x+"_"+update_y).css("background-color");
+					if( update_x<0||update_x>=this.blocks_count||
+						update_x<0||update_x>=this.blocks_count||
+						update_color != 'rgb(255, 255, 255)'){
+						var result=false;
+					};
+				};
+				if (result){
+					return true;
+				};
+			};
+		};
+	};
+	return false;
+	
+};
+
+
 Board.prototype.input_figur = function(figur, start_x, start_y){
 	for (var i in figur.blocks ) {
 		var update_x=start_x+figur.blocks[i][0];
@@ -203,7 +230,6 @@ Figur.prototype.is_need_generate = function(){
 
 Figur.prototype.generate = function(board){
 	for (var i = Figur.prototype.figurs_count - 1; i >= 0; i--) {
-		console.log("generate");
 		figur=new Figur (board, "figur"+i)
 		figur.draw(i);
 	};
@@ -231,8 +257,6 @@ $(function() {
 
 			if(board.can_input_figur(figur,x,y)){
 	            board.input_figur(figur,x,y);
-	            console.log("input done")
-	            console.log(board.control_sum)
 	            board.status();
 	            if(board.is_need_clean()){
 	            	board.clean();
@@ -243,6 +267,10 @@ $(function() {
 	            	Figur.prototype.generate(board);
 	            }
 	            //figur.draw(figur.number);
+	        };
+        	console.log("testing...");
+	        if(!board.can_input_any_figurs(Figur.prototype.figurs)){
+	        	$("#end_game").append("you can't input any figurs")
 	        }
         }
     });
@@ -259,6 +287,8 @@ $(".restart").click(function(){
     if(Figur.prototype.is_need_generate()){
     	Figur.prototype.generate(board);
     }
+
+    $("#end_game").empty();
 })
 
 

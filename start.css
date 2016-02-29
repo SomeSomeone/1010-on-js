@@ -21,3 +21,7 @@ body{
 .restart{
 	float: right;
 }
+#end_game{
+	float: right;
+	background-color: red;	
+}
