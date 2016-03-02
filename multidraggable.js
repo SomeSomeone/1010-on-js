@@ -16,7 +16,11 @@
    		 $(this).live("mouseover", function() {
 		         if (!$(this).data("init")) {
 		            $(this).data("init", true).draggable(opts,{
+		            	 containment: 'window',
+    					 scroll: false,
 				         start: function (event,ui) {
+				         	var figur=Figur.prototype.figurs[event.target.id.split('_')[2]];
+				         	figur.upset();
 							var pos = $(this).position();
 							$.each(opts.group || {}, function(key,value) {
 								var elemPos = $(value).position();
@@ -34,12 +38,16 @@
 							opts.dragNative ? opts.dragNative() : {};
 						},
 						stop: function(event,ui) {
+
+
 							var pos = $(this).offset();
 							$.each(opts.group || {}, function(key,value) {
 								$(value).offset({left: pos.left + initLeftOffset[key], 
 								top: pos.top + initTopOffset[key]});								
 							});
 							opts.stopNative ? opts.stopNative() : {};
+							var figur=Figur.prototype.figurs[event.target.id.split('_')[2]];
+				         	figur.downset();
 						},
 					});
 		        }
