@@ -3,14 +3,14 @@ body{
 	margin:0;
 }
 .block{
-	border-radius :20px;
+
     background:white; 
 	position: absolute;
 
 }
 .block_move{
 	position: absolute;
-	border-radius :20px;
+	border-radius :2px;
 	opacity: 0.7;
 	background-color:lime; 
 }
@@ -22,10 +22,15 @@ body{
 	float: right;
 }
 #end_game{
+
 	float: right;
 	background-color: red;	
 }
 #points{
-	float: right;
-	background-color: blue;	
+	position: absolute;
+	font-size: 2.1em;
+	color: #BDBDBD;
+	border: 2px #BDBDBD dashed;
+	border-radius: 1em;
+	padding: 10px;
 }
