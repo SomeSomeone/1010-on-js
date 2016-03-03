@@ -61,10 +61,12 @@ Board.prototype.can_input_figur = function(figur, start_x, start_y){
 	for (var i = figur.blocks.length - 1; i >= 0 ; i--) {
 		var update_x=start_x+figur.blocks[i][0];
 		var update_y=start_y+figur.blocks[i][1];
-		var update_color=$("#"+update_x+"_"+update_y).css("background-color");
+		var element=$("#"+update_x+"_"+update_y)
+		var update_color=element.css("background-color");
+
 		if( update_x<0||update_x>=this.blocks_count||
 			update_x<0||update_x>=this.blocks_count||
-			update_color != 'rgb(255, 255, 255)'){
+			update_color != 'rgb(255, 255, 255)'||element==undefined){
 			return false;
 		};
 	};
@@ -74,23 +76,11 @@ Board.prototype.can_input_figur = function(figur, start_x, start_y){
 Board.prototype.can_input_any_figurs = function(figurs){
 
 	for(var figur in figurs){
-		for (var x = this.blocks_count; x >= 0; x--) {
-			for (var y = this.blocks_count; y >= 0; y--) {
-				var result=true;
-				for (var i = figurs[figur].blocks.length - 1; i >= 0 ; i--) {
-					var update_x=x+figurs[figur].blocks[i][0];
-					var update_y=y+figurs[figur].blocks[i][1];
-					var update_color=$("#"+update_x+"_"+update_y).css("background-color");
-					if( update_x<0||update_x>=this.blocks_count||
-						update_x<0||update_x>=this.blocks_count||
-						(update_color != 'rgb(255, 255, 255)'&&
-						update_color != 'rgb(206, 206, 206)')){
-						var result=false;
-					};
-				};
-				if (result){
+		for (var x = this.blocks_count; x >= -2; x--) {
+			for (var y = this.blocks_count; y >= -2; y--) {
+				if (this.can_input_figur(figurs[figur],x,y)){
 					return true;
-				};
+				}
 			};
 		};
 	};
