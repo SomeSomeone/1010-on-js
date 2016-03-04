@@ -1,6 +1,13 @@
 
 body{
 	margin:0;
+	-webkit-user-select: none;
+    /* user-select -- это нестандартное свойство */
+
+    -moz-user-select: none;
+    /* поэтому нужны префиксы */
+
+    -ms-user-select: none;
 }
 .block{
 
@@ -28,6 +35,7 @@ body{
 }
 
 .right_block{
+
 	position: absolute;
 	font-size: 2.1em;
 	color: #BDBDBD;
