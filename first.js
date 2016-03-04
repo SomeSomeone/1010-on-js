@@ -34,7 +34,7 @@ Board.prototype.restart_board = function(){
 	this.points=0;
 	for (var x = this.blocks_count-1 ; x >= 0; x--) {
 		for (var y =this.blocks_count-1 ; y >= 0; y--) {
-			$("."+this.class_name+'>#'+x+'_'+y).animate({ backgroundColor: "#ffffff" }, 2000)
+			$("."+this.class_name+'>#'+x+'_'+y).animate({ backgroundColor: "#ffffff" }, 600)
 		};
 	this.control_sum[0][x]=0;//x
 	this.control_sum[1][x]=0;//y
@@ -289,57 +289,90 @@ Figur.prototype.erase = function(){
 
 
 
+	$(document).ready(function() { 
 
 
+	var board = new Board ();
+	board.draw();
+	Figur.prototype.generate(board);
 
-var board = new Board ();
-board.draw();
-Figur.prototype.generate(board);
+	$("#points").css({	left:		board.full_size+board.offset+board.full_block_size,
+						top:		board.full_block_size
+					});
+	$("#restart").css({	left:		board.full_size+board.offset+board.full_block_size,
+						top:		board.full_block_size*3
+					});
 
-$("#points").css("left",board.full_size+board.offset+board.full_block_size+'px' )
 
-$(function() {
-	$('.block').droppable({
+	$(function() {
+		$('.block').droppable({
 
-		drop: function(event, ui) {
-        	var figur=Figur.prototype.figurs[event.target.id.split('_')[2]]
+			drop: function(event, ui) {
+	        	var figur=Figur.prototype.figurs[event.target.id.split('_')[2]]
 
-			y=parseInt(this.id.split('_')[1])-parseInt(event.target.id.split('_')[1]);
-        	x=parseInt(this.id.split('_')[0])-parseInt(event.target.id.split('_')[0]);
+				y=parseInt(this.id.split('_')[1])-parseInt(event.target.id.split('_')[1]);
+	        	x=parseInt(this.id.split('_')[0])-parseInt(event.target.id.split('_')[0]);
 
-			if(board.can_input_figur(figur,x,y)){
-	            board.input_figur(figur,x,y);
-	            board.status();
-	            if(board.is_need_clean()){
-	            	board.clean();
-	            	board.status();
-	            }
-	            figur.erase();
-	            if(Figur.prototype.is_need_generate()){
-	            	Figur.prototype.generate(board);
-	            }
-	        };
-        	$("#points > span").text(board.points);
-	        if(!board.can_input_any_figurs(Figur.prototype.figurs)){
-	        	$("#end_game").append("you can't input any figurs")
+				if(board.can_input_figur(figur,x,y)){
+		            board.input_figur(figur,x,y);
+		            board.status();
+		            if(board.is_need_clean()){
+		            	board.clean();
+		            	board.status();
+		            }
+		            figur.erase();
+		            if(Figur.prototype.is_need_generate()){
+		            	Figur.prototype.generate(board);
+		            }
+		        };
+	        	$("#points > span , #result_points").text(board.points);
+	        	
+	        	setTimeout(function(){
+		        	if(!board.can_input_any_figurs(Figur.prototype.figurs)){
+			        	end_game();
+			        }
+	        	},2000);
+
 	        }
-        }
-    });
-		
-});
-		
+	    });
+			
+	});
 
-$(".restart").click(function(){
-	$("#points").empty();
-	$("#end_game").empty();
-	board.restart_board();
-	for(var i in Figur.prototype.figurs){
-		var a= Figur.prototype.figurs[i].erase();
+
+	function end_game(){ 
+		$('#overlay').fadeIn(400,
+		 	function(){
+				$('#result_in_game').css('display', 'block').animate({opacity: 1, top: '50%'}, 200);
+		});
+	};
+
+
+	$('#overlay , .button_block').click( function(){
+			$('#result_in_game').animate({opacity: 0, top: '45%'},
+				200, 
+				function(){
+					$(this).css('display', 'none');
+					$('#overlay').fadeOut(400);
+				}		
+			);
+			restart();
+	})
+			
+	function restart(){
+		$("#points>span , #result_points").text("0");
+		board.restart_board();
+		for(var i in Figur.prototype.figurs){
+			var a= Figur.prototype.figurs[i].erase();
+		}
+
+	    if(Figur.prototype.is_need_generate()){
+	    	Figur.prototype.generate(board);
+	    }
 	}
 
-    if(Figur.prototype.is_need_generate()){
-    	Figur.prototype.generate(board);
-    }
-})
 
+		$('#restart').click(function(){
+			end_game();
+		});
+});
 
