@@ -1,5 +1,6 @@
 
 body{
+	cursor :default;
 	margin:0;
 	-webkit-user-select: none;
     /* user-select -- это нестандартное свойство */
@@ -35,7 +36,6 @@ body{
 }
 
 .right_block{
-
 	position: absolute;
 	font-size: 2.1em;
 	color: #BDBDBD;
