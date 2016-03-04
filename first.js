@@ -58,7 +58,7 @@ Board.prototype.draw = function(){
 };
 
 Board.prototype.can_input_figur = function(figur, start_x, start_y){
-	for (var i = figur.blocks.length - 1; i >= 0 ; i--) {
+	for (var i in figur.blocks) {
 		var update_x=start_x+figur.blocks[i][0];
 		var update_y=start_y+figur.blocks[i][1];
 		var element=$("#"+update_x+"_"+update_y)
