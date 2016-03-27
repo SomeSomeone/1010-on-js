@@ -342,7 +342,22 @@ Figur.prototype.erase = function(){
 	function end_game(){ 
 		$('#overlay').fadeIn(400,
 		 	function(){
+		 		var record;
+		 		try{
+		 			record=localStorage.getItem("1010-record");
+		 		}
+		 		catch(e){
+		 			record=0;
+		 		}
+		 		$('#best_result_points').text(record)
 				$('#result_in_game').css('display', 'block').animate({opacity: 1, top: '50%'}, 200);
+				console.log(record);
+				console.log(1);
+				if(record < parseInt($('#result_points').text())){
+					localStorage.setItem("1010-record", parseInt($('#result_points').text()));
+					console.log(1);
+				};
+
 		});
 	};
 
