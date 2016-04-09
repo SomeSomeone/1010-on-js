@@ -1,27 +1,20 @@
+var OPTIONS = {
+	"BoardClassName"	: "board",
+	"BlockClassName"	: "block",
+	"BoardSize"			: 10,
+	"BlockSize"			: parseInt(($( document ).height()/15)),
+	"FullBlockSize"		: parseInt(($( document ).height()/15)+4)
+}
+
 function Board (){
-	this.class_name="board";
-	this.class_block="block";
-
-	this.figur_count=3;
-	this.blocks_count=10;
-
-	
-	this.block_size=parseInt(($( document ).height()/5*3)/this.blocks_count);
-	this.block_border=parseInt(this.block_size/20);//need rewrite
-	this.border_radius=	parseInt(this.block_size/4);
-
-
-
-	this.full_block_size=this.block_size+this.block_border*2;
-	this.full_size=this.full_block_size*this.blocks_count;
-	
+	this.full_block_size=OPTIONS["BlockSize"]+4;
+	this.full_size=this.full_block_size*OPTIONS["BoardSize"];
 	var help =parseInt(($( document ).width()-this.full_size)/2)
 	if (help<=250){
 		this.offset=0;
 	}else{
 		this.offset=help
 	}
-
 
 	this.points=0;
 	this.control_sum=[[],[]];
@@ -32,9 +25,9 @@ Board.prototype.restart_board = function(){
 	this.control_sum=[[],[]];
 	this.must_clean=[[],[]];
 	this.points=0;
-	for (var x = this.blocks_count-1 ; x >= 0; x--) {
-		for (var y =this.blocks_count-1 ; y >= 0; y--) {
-			$("."+this.class_name+'>#'+x+'_'+y).animate({ backgroundColor: "#ffffff" }, 600)
+	for (var x = OPTIONS["BoardSize"]-1 ; x >= 0; x--) {
+		for (var y =OPTIONS["BoardSize"]-1 ; y >= 0; y--) {
+			$("."+OPTIONS["BoardClassName"]+'>#'+x+'_'+y).animate({ backgroundColor: "#ffffff" }, 600)
 		};
 	this.control_sum[0][x]=0;//x
 	this.control_sum[1][x]=0;//y
@@ -44,17 +37,17 @@ Board.prototype.restart_board = function(){
 
 
 Board.prototype.draw = function(){
-	for (var x = this.blocks_count-1 ; x >= 0; x--) {
-		for (var y =this.blocks_count-1 ; y >= 0; y--) {
-			var style='style="left:'+(this.offset+this.full_block_size*x)+'px;top:'+(this.full_block_size*y)+'px;"';
-			$("."+this.class_name).append('<div class="'+this.class_block+'" id="'+x+'_'+y+'" ' + style+'></div>');
+	console.log($("."+OPTIONS["BlockClassName"]).outerHeight())
+	for (var x = OPTIONS["BoardSize"]-1 ; x >= 0; x--) {
+		for (var y =OPTIONS["BoardSize"]-1 ; y >= 0; y--) {
+			var style='style="left:'+(this.offset+OPTIONS["FullBlockSize"]*x)+'px;top:'+(OPTIONS["FullBlockSize"]*y)+'px;"';
+			$("."+OPTIONS["BoardClassName"]).append('<div class="'+OPTIONS["BlockClassName"]+'" id="'+x+'_'+y+'" ' + style+'></div>');
 		};
 		this.control_sum[0][x]=0;//x
 		this.control_sum[1][x]=0;//y
 	};
-	$("."+this.class_block).css({width:this.block_size,height:this.block_size});
-	$("."+this.class_block).css("border", "#BDBDBD solid "+this.block_border+"px");
-	$("."+this.class_block).css("border-radius", this.border_radius+"px");	
+	$("."+OPTIONS["BlockClassName"]).css({width:OPTIONS["BlockSize"],height:OPTIONS["BlockSize"]});
+
 };
 
 Board.prototype.can_input_figur = function(figur, start_x, start_y){
@@ -64,8 +57,8 @@ Board.prototype.can_input_figur = function(figur, start_x, start_y){
 		var element=$("#"+update_x+"_"+update_y)
 		var update_color=element.css("background-color");
 
-		if( update_x<0||update_x>=this.blocks_count||
-			update_x<0||update_x>=this.blocks_count||
+		if( update_x<0||update_x>=OPTIONS["BoardSize"]||
+			update_x<0||update_x>=OPTIONS["BoardSize"]||
 			update_color != 'rgb(255, 255, 255)'||element==undefined){
 			return false;
 		};
@@ -76,8 +69,8 @@ Board.prototype.can_input_figur = function(figur, start_x, start_y){
 Board.prototype.can_input_any_figurs = function(figurs){
 
 	for(var figur in figurs){
-		for (var x = this.blocks_count; x >= -2; x--) {
-			for (var y = this.blocks_count; y >= -2; y--) {
+		for (var x =OPTIONS["BoardSize"]; x >= -2; x--) {
+			for (var y = OPTIONS["BoardSize"]; y >= -2; y--) {
 				if (this.can_input_figur(figurs[figur],x,y)){
 					return true;
 				}
@@ -103,8 +96,8 @@ Board.prototype.input_figur = function(figur, start_x, start_y){
 Board.prototype.is_need_clean = function(){
 	var result=false;
 	for (var x_or_y in this.must_clean) {
-		for (var i = this.blocks_count-1; i >= 0; i--) {
-			if(this.control_sum [x_or_y][i]>=this.blocks_count){
+		for (var i = OPTIONS["BoardSize"]-1; i >= 0; i--) {
+			if(this.control_sum [x_or_y][i]>=OPTIONS["BoardSize"]){
 				this.must_clean[x_or_y][i]=true;
 				result=true;
 			};
@@ -119,7 +112,7 @@ Board.prototype.clean = function(){
 		for(var number_in_must_clean in this.must_clean[x_or_y]){
 			if(this.must_clean[x_or_y][number_in_must_clean]){
 
-	            for (var i = this.blocks_count-1; i >= 0; i--) {
+	            for (var i = OPTIONS["BoardSize"]-1; i >= 0; i--) {
 					if(x_or_y==0){
 
 						 $("#"+number_in_must_clean+"_"+i).animate({ backgroundColor: "#BDBDBD" }, 400)
@@ -166,8 +159,8 @@ function getRandomColor() {
 function Figur (board,name){
 	this.class_name=name;
 	this.board=board;
-	this.block_size=parseInt(board.full_block_size/1.5);
-	this.border_radius=parseInt(board.border_radius/1.5);
+	this.block_size=parseInt(OPTIONS["FullBlockSize"]/1.5);
+	this.border_radius=parseInt(OPTIONS["FullBlockSize"]/6);
 	this.number;
 	this.kind=-1;
 	this.blocks=[];
@@ -296,11 +289,11 @@ Figur.prototype.erase = function(){
 	board.draw();
 	Figur.prototype.generate(board);
 
-	$("#points").css({	left:		board.full_size+board.offset+board.full_block_size,
-						top:		board.full_block_size
+	$("#points").css({	left:		board.full_size+board.offset+OPTIONS["FullBlockSize"],
+						top:		OPTIONS["FullBlockSize"]
 					});
-	$("#restart").css({	left:		board.full_size+board.offset+board.full_block_size,
-						top:		board.full_block_size*3
+	$("#restart").css({	left:		board.full_size+board.offset+OPTIONS["FullBlockSize"],
+						top:		OPTIONS["FullBlockSize"]*3
 					});
 
 

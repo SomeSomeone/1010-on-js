@@ -11,7 +11,8 @@ body{
     -ms-user-select: none;
 }
 .block{
-
+	border-radius: 25%;
+	border : #BDBDBD solid 0.125em;
     background:white; 
 	position: absolute;
 
